@@ -3,9 +3,11 @@ package com.example.flo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.flo.model.Sing
+import com.google.gson.Gson
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Response
 import timber.log.Timber
@@ -27,51 +29,42 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Timber.plant(Timber.DebugTree())
         clickBtn.setOnClickListener {
-//            baseHttpConnection()
+            baseHttpConnection()
 //            useRetrofit()
-            useRetrofit2()
+//            useRetrofit2()
 
         }
         Timber.d(TAG)
     }
 
     private fun useRetrofit() {
-        val api = RetrofitBuilder.floApi
-        api.getSingInfo().enqueue(object: retrofit2.Callback<Sing> {
+        RetrofitBuilder.floApi.getSingInfo().enqueue(object: retrofit2.Callback<Sing> {
             override fun onResponse(call: Call<Sing>, response: Response<Sing>) {
                 val body = response.body()
-                Timber.d(body.toString())
                 body?.let {
-                    Timber.d(it.singer)
+                    Timber.d(it.toString())
                     testTv.text = it.singer
+                    it.setImageByUrl(this@MainActivity, singIv)
                 }
             }
 
             override fun onFailure(call: Call<Sing>, t: Throwable) {
                 Timber.d("fail ${t.localizedMessage}")
             }
-
         })
     }
 
     private fun useRetrofit2() {
-        val api = RetrofitBuilder.floApi2
-        api.getRxSingInfo()
+        RetrofitBuilder.floApi2.getRxSingInfo()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
-            .doOnError {
-                Timber.d(it.localizedMessage)
-            }
-            .unsubscribeOn(Schedulers.io())
-            .onErrorReturn {
-                Timber.d(it.localizedMessage)
-                null
-            }
-            .subscribe { it ->
-                Timber.d(it.singer)
-                testTv.text = it.singer
-            }
-
+            .subscribe({
+                Timber.d("onNext ${it.singer}")
+            },  {
+                Timber.d("onError ${it.localizedMessage}")
+            },  {
+                Timber.d("onComplete")
+            })
     }
 
     private fun baseHttpConnection() {
@@ -92,9 +85,10 @@ class MainActivity : AppCompatActivity() {
                     Timber.d(content.toString())
                     buffer.close()
                     urlConn.disconnect()
-                    runOnUiThread {
-                        testTv.text = content.toString()
-                    }
+//                    runOnUiThread {
+//                        testTv.text = content.toString()
+//                    }
+                    baseParsing(content.toString())
                 } else {
                     Timber.d(urlConn.responseCode.toString())
                 }
@@ -102,6 +96,26 @@ class MainActivity : AppCompatActivity() {
                 Timber.d(e.toString())
             }
         }
+    }
+
+    private fun baseParsing(content: String): List<Sing> {
+        val singList = ArrayList<Sing>()
+        try {
+            val jsonObject = JSONObject(content)
+            val singer = jsonObject.getString("singer")
+            val album = jsonObject.getString("album")
+            val title = jsonObject.getString("title")
+            val duration = jsonObject.getInt("duration")
+            val image = jsonObject.getString("image")
+            val file = jsonObject.getString("file")
+            val lyrics = jsonObject.getString("lyrics")
+            val sing = Sing(singer, album, title, duration, image, file, lyrics)
+            Timber.d("sing : ${sing.toString()}")
+            singList.add(sing)
+        } catch (e: Exception) {
+            Timber.d("error : $e")
+        }
+        return singList
     }
 
 }
