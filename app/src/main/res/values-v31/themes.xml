@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.App.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="android:windowSplashScreenBrandingImage">@drawable/splash</item>
-        <item name="postSplashScreenTheme">@style/Theme.Flo</item>
+    <style name="Theme.RemoveSplashScreenTheme" parent="Theme.Design.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="Theme.App.Splash" parent="Theme.Design.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="windowSplashScreenAnimationDuration">5000</item>
+        <item name="postSplashScreenTheme">@style/Theme.Design.NoActionBar</item>
     </style>
 
 </resources>

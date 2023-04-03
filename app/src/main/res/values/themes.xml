@@ -14,10 +14,10 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.App.Splash" parent="Theme.SplashScreen">
+    <style name="Theme.App.Splash" parent="Theme.Design.NoActionBar">
         <item name="android:windowBackground">@drawable/splash</item>
 <!--        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>-->
-<!--        <item name="windowSplashScreenAnimationDuration">200</item>-->
-<!--        <item name="postSplashScreenTheme">@style/Theme.Flo</item>-->
+        <item name="windowSplashScreenAnimationDuration">2000</item>
+        <item name="postSplashScreenTheme">@style/Theme.Design.NoActionBar</item>
     </style>
 </resources>
