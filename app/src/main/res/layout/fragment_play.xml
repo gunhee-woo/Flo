@@ -67,33 +67,45 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <TextView
-                android:id="@+id/lyricTv1"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/lyricLly"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="gggggggggggggggggg"
-                android:textColor="#777777"
-                android:textSize="15sp"
-                android:singleLine="true"
-                android:gravity="center"
+                android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/albumCoverIv"
-                android:layout_marginTop="8dp" />
+                app:layout_constraintTop_toBottomOf="@+id/albumCoverIv">
 
-            <TextView
-                android:id="@+id/lyricTv2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
-                android:textColor="#777777"
-                android:textSize="15sp"
-                android:singleLine="true"
-                android:gravity="center"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lyricTv1"
-                android:layout_marginTop="8dp"/>
+                <TextView
+                    android:id="@+id/lyricTv1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="gggggggggggggggggg"
+                    android:textColor="#777777"
+                    android:textSize="15sp"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp" />
+
+                <TextView
+                    android:id="@+id/lyricTv2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+                    android:textColor="#777777"
+                    android:textSize="15sp"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lyricTv1"
+                    android:layout_marginTop="8dp"/>
+
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/singAddInfoLly"
@@ -101,9 +113,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@+id/seekBarLly"
-                app:layout_constraintTop_toTopOf="@+id/lyricTv2"
-                android:layout_marginTop="16dp">
+                app:layout_constraintBottom_toTopOf="@+id/seekBarLly"
+                app:layout_constraintTop_toBottomOf="@+id/lyricLly">
 
                 <ImageView
                     android:id="@+id/likeBtn"
@@ -278,13 +289,13 @@
                 android:id="@+id/playBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:src="@{viewModel.isPlaying() ? @drawable/ic_baseline_pause_24 : @drawable/ic_baseline_play_arrow_24}"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/nextBtn"

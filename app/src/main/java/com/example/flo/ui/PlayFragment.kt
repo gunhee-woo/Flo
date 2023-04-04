@@ -3,25 +3,30 @@ package com.example.flo.ui
 import android.annotation.SuppressLint
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.SeekBar
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.flo.App
 import com.example.flo.R
 import com.example.flo.databinding.FragmentPlayBinding
 import com.example.flo.ui.viewmodel.PlayViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withContext
 import okhttp3.internal.format
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 
 class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
-    private val viewModel: PlayViewModel by viewModels()
-    private var mediaPlayer: MediaPlayer = MediaPlayer()
-
+    private val viewModel: PlayViewModel by activityViewModels()
 
     override fun init() {
         Timber.d(App.Function())
@@ -34,8 +39,9 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
 
     private fun subscribeLiveData() {
         viewModel.song.observe(this) {
+            Timber.d("song subscribe livedata")
             loadImage(it.image)
-            mediaPlayer.apply {
+            viewModel.mediaPlayer.apply {
                 setAudioAttributes(AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
                 try {
                     setDataSource(it.file)
@@ -44,25 +50,33 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
                     Timber.d(e.toString())
                 }
                 prepareAsync()
+                setOnPreparedListener {
+                    binding.timePgEndTv.text = getTimeString(duration)
+                    binding.singSb.max = duration
+                }
+            }
+            it.getLyricsList().also { lyric ->
+                binding.lyricTv1.text = lyric[0].second
+                binding.lyricTv2.text = lyric[1].second
             }
         }
     }
 
     private fun setEvent() {
         binding.playBtn.setOnClickListener {
-            if(mediaPlayer.isPlaying) {
-                mediaPlayer.pause()
+            if(viewModel.mediaPlayer.isPlaying) {
+                viewModel.mediaPlayer.pause()
             } else {
                 playSong()
             }
-            viewModel.isPlaying.set(mediaPlayer.isPlaying)
+            viewModel.isPlaying.set(viewModel.mediaPlayer.isPlaying)
         }
         binding.singSb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             @SuppressLint("SetTextI18n")
             override fun onProgressChanged(p0: SeekBar?, progress: Int, fromUser: Boolean) {
                 Timber.d("${App.Function()}, progress : $progress, fromTouch : $fromUser")
                 if(fromUser) {
-                    mediaPlayer.seekTo(progress)
+                    viewModel.mediaPlayer.seekTo(progress)
                 }
                 binding.timePgTv.text = getTimeString(progress)
             }
@@ -76,21 +90,22 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
             }
 
         })
+        binding.lyricLly.setOnClickListener {
+            navigateToLyricFragment()
+        }
     }
 
     private fun playSong() {
-        binding.singSb.max = mediaPlayer.duration
-        binding.timePgEndTv.text = getTimeString(mediaPlayer.duration)
         binding.timePgTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.teal_200))
-        mediaPlayer.setVolume(0.5f, 0.5f)
-        mediaPlayer.isLooping = false
-        mediaPlayer.start()
+        viewModel.mediaPlayer.setVolume(0.5f, 0.5f)
+        viewModel.mediaPlayer.isLooping = false
+        viewModel.mediaPlayer.start()
         PlayThread().start()
     }
 
     private fun clearPlayer() {
-        mediaPlayer.stop()
-        mediaPlayer.release()
+        viewModel.mediaPlayer.stop()
+        viewModel.mediaPlayer.release()
     }
 
     private fun loadImage(url: String) {
@@ -98,6 +113,11 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
             .load(url)
             .fitCenter()
             .into(binding.albumCoverIv)
+    }
+
+    private fun navigateToLyricFragment() {
+        val action = PlayFragmentDirections.actionPlayFragmentToLyricFragment()
+        findNavController().navigate(action)
     }
 
     private fun getTimeString(duration: Int, isVisibleMillis: Boolean = false): String {
@@ -139,11 +159,11 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
     inner class PlayThread: Thread() {
         override fun run() {
             super.run()
-            var current = mediaPlayer.currentPosition
-            val total = mediaPlayer.duration
-            while(mediaPlayer.isPlaying && current < total) {
+            var current = viewModel.mediaPlayer.currentPosition
+            val total = viewModel.mediaPlayer.duration
+            while(viewModel.mediaPlayer.isPlaying && current < total) {
                 try {
-                    current = mediaPlayer.currentPosition
+                    current = viewModel.mediaPlayer.currentPosition
                     Timber.d("currentPos : $current")
                     Handler(Looper.getMainLooper()).post {
                         binding.timePgTv.text = getTimeString(current)

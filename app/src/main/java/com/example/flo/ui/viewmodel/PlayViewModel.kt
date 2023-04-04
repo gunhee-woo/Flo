@@ -1,5 +1,6 @@
 package com.example.flo.ui.viewmodel
 
+import android.media.MediaPlayer
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,10 +12,10 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class PlayViewModel: ViewModel() {
-    private val TAG = this::class.simpleName
-
     private val _song = MutableLiveData<Song>()
     val song: LiveData<Song> get() = _song
+
+    val mediaPlayer = MediaPlayer()
 
     val isPlaying = ObservableBoolean(false)
 

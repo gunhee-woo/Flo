@@ -12,7 +12,7 @@ data class Song(
     @field:SerializedName("file") val file: String,
     @field:SerializedName("lyrics") val lyrics: String
 ) {
-    fun getLyricMap(): MutableMap<String, String> {
+    fun getLyricMap(): Map<String, String> {
         val map = mutableMapOf<String, String>()
         lyrics.split("\n").forEach {
             it.split("]").also { itt ->
@@ -21,5 +21,9 @@ data class Song(
             }
         }
         return map
+    }
+
+    fun getLyricsList(): List<Pair<String, String>> {
+        return lyrics.split("\n").map { it.split("]").let { itt -> itt[0].drop(1) to itt[1] } }
     }
 }
