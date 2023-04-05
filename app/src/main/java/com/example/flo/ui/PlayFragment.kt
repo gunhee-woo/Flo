@@ -1,28 +1,21 @@
 package com.example.flo.ui
 
 import android.annotation.SuppressLint
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.widget.SeekBar
-import androidx.annotation.RequiresApi
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.flo.App
 import com.example.flo.R
 import com.example.flo.databinding.FragmentPlayBinding
 import com.example.flo.ui.viewmodel.PlayViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.withContext
-import okhttp3.internal.format
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 
 class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
@@ -31,7 +24,6 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
     override fun init() {
         Timber.d(App.Function())
         binding.viewModel = viewModel
-        viewModel.getSongInfo()
         binding.titleTv.isSelected = true
         subscribeLiveData()
         setEvent()
@@ -41,25 +33,74 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
         viewModel.song.observe(this) {
             Timber.d("song subscribe livedata")
             loadImage(it.image)
-            viewModel.mediaPlayer.apply {
-                setAudioAttributes(AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
-                try {
-                    setDataSource(it.file)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Timber.d(e.toString())
-                }
-                prepareAsync()
-                setOnPreparedListener {
-                    binding.timePgEndTv.text = getTimeString(duration)
-                    binding.singSb.max = duration
-                }
-            }
+//            viewModel.mediaPlayer.apply {
+//                setAudioAttributes(AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+//                try {
+//                    setDataSource(it.file)
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                    Timber.d(e.toString())
+//                }
+//                prepareAsync()
+//            }
             it.getLyricsList().also { lyric ->
-                binding.lyricTv1.text = lyric[0].second
-                binding.lyricTv2.text = lyric[1].second
+                binding.lyricTv.text = "${lyric[0].second} \n ${lyric[1].second}"
+//                binding.lyricTv1.text = lyric[0].second
+//                binding.lyricTv2.text = lyric[1].second
             }
         }
+        viewModel.uiEvent.observe(this) {
+            when(it.first) {
+                PlayViewModel.NOTIFY -> {
+                    Toast.makeText(context, it.second as String, Toast.LENGTH_SHORT).show()
+                }
+                PlayViewModel.PREPARED -> {
+                    Timber.d("duration : ${it.second as Int}")
+                    binding.timePgEndTv.text = viewModel.getTimeString(it.second as Int)
+                    binding.singSb.max = it.second as Int
+                }
+                PlayViewModel.PROGRESS -> {
+                    val current = it.second as Int
+                    if(current != -1) {
+                        Timber.d("current : $current, timeString : ${viewModel.getTimeString(current, true)}")
+                        binding.timePgTv.text = viewModel.getTimeString(current)
+                        binding.singSb.progress = current
+                        setLyrics(current)
+                    } else {
+                        ix = 1
+                    }
+                }
+            }
+        }
+    }
+
+    private var ix = 1
+
+    private fun setLyrics(cur: Int) {
+        viewModel.song.value?.let { song ->
+            val lyricList = song.getLyricsList()
+            val startTime = lyricList[ix - 1].first
+            val nextTime = lyricList[ix].first
+            Timber.d("current : $cur, startTime : $startTime, nextTime : $nextTime, lyricList.size : ${lyricList.size}")
+            if(cur in startTime until nextTime) {
+                binding.lyricTv.text = getCurrentLyric(lyricList[ix - 1].second, lyricList[ix].second)
+            }
+            else if(cur >= nextTime) {
+                ix++
+                if(ix >= lyricList.size) {
+                    binding.lyricTv.text = getCurrentLyric(lyricList[ix - 1].second, "")
+                } else {
+                    binding.lyricTv.text = getCurrentLyric(lyricList[ix - 1].second, lyricList[ix].second)
+                }
+            }
+            Timber.d("lyric : ${binding.lyricTv.text}")
+//            if(cur >= nextTime) ix++
+//            binding.lyricTv.text = getCurrentLyric(lyricList[ix - 1].second, lyricList[ix].second)
+        }
+    }
+
+    private fun getCurrentLyric(lyric1: String, lyric2: String) = SpannableString("$lyric1\n$lyric2").apply {
+        setSpan(ForegroundColorSpan(Color.WHITE), 0, lyric1.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     private fun setEvent() {
@@ -78,11 +119,12 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
                 if(fromUser) {
                     viewModel.mediaPlayer.seekTo(progress)
                 }
-                binding.timePgTv.text = getTimeString(progress)
+                binding.timePgTv.text = viewModel.getTimeString(progress)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
                 Timber.d(App.Function())
+
             }
 
             override fun onStopTrackingTouch(p0: SeekBar?) {
@@ -90,17 +132,15 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
             }
 
         })
-        binding.lyricLly.setOnClickListener {
-            navigateToLyricFragment()
-        }
+//        binding.lyricLly.setOnClickListener {
+//            navigateToLyricFragment()
+//        }
     }
 
     private fun playSong() {
         binding.timePgTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.teal_200))
-        viewModel.mediaPlayer.setVolume(0.5f, 0.5f)
-        viewModel.mediaPlayer.isLooping = false
         viewModel.mediaPlayer.start()
-        PlayThread().start()
+        viewModel.PlayThread().start()
     }
 
     private fun clearPlayer() {
@@ -120,62 +160,8 @@ class PlayFragment: BaseFragment<FragmentPlayBinding>(R.layout.fragment_play) {
         findNavController().navigate(action)
     }
 
-    private fun getTimeString(duration: Int, isVisibleMillis: Boolean = false): String {
-        val hours = TimeUnit.MILLISECONDS.toHours(duration.toLong())
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(duration.toLong())
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
-        val milliseconds = TimeUnit.MILLISECONDS.toMillis(duration.toLong())
-        return if (hours > 0) {
-            format(
-                "%s%02d:%02d:%02d",
-                "",
-                hours,
-                minutes - TimeUnit.HOURS.toMinutes(hours),
-                seconds - TimeUnit.MINUTES.toSeconds(minutes)
-            )
-        } else if(isVisibleMillis) {
-            format(
-                "%s%02d:%02d:%03d",
-                "",
-                minutes,
-                seconds - TimeUnit.MINUTES.toSeconds(minutes),
-                milliseconds - TimeUnit.SECONDS.toMillis(seconds)
-            )
-        } else {
-            format(
-                "%s%02d:%02d",
-                "",
-                minutes,
-                seconds - TimeUnit.MINUTES.toSeconds(minutes)
-            )
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         clearPlayer()
-    }
-
-    inner class PlayThread: Thread() {
-        override fun run() {
-            super.run()
-            var current = viewModel.mediaPlayer.currentPosition
-            val total = viewModel.mediaPlayer.duration
-            while(viewModel.mediaPlayer.isPlaying && current < total) {
-                try {
-                    current = viewModel.mediaPlayer.currentPosition
-                    Timber.d("currentPos : $current")
-                    Handler(Looper.getMainLooper()).post {
-                        binding.timePgTv.text = getTimeString(current)
-                        binding.singSb.progress = current
-                    }
-                    sleep(1000)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Timber.d(e.toString())
-                    return
-                }
-            }
-        }
     }
 }

@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.example.flo.ui.viewmodel.PlayViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -67,33 +69,43 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <ScrollView
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/lyricRcv"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginTop="16dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/titleLly">
+                    app:layout_constraintTop_toBottomOf="@+id/titleLly"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+<!--                <ScrollView-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_marginTop="16dp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/titleLly">-->
 
-                        <TextView
-                            android:id="@+id/lyricTv"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textColor="@color/gray"
-                            android:textSize="20sp"
-                            android:lineSpacingExtra="10dp"
-                            android:layout_marginStart="16dp"
-                            android:text="fdasfsdafdsfsdfs\ndfdfsdafsadf\ndfdfdfdf\ndfdfdf\ndfdf"/>
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="vertical">-->
 
-                    </LinearLayout>
+<!--                        <TextView-->
+<!--                            android:id="@+id/lyricTv"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:textColor="@color/gray"-->
+<!--                            android:textSize="20sp"-->
+<!--                            android:lineSpacingExtra="10dp"-->
+<!--                            android:layout_marginStart="16dp"-->
+<!--                            android:text="fdasfsdafdsfsdfs\ndfdfsdafsadf\ndfdfdfdf\ndfdfdf\ndfdf"/>-->
 
-                </ScrollView>
+<!--                    </LinearLayout>-->
+
+<!--                </ScrollView>-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

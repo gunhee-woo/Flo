@@ -40,7 +40,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/singerTv"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp" />
 
@@ -55,57 +55,75 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/albumCoverIv"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="16dp"/>
 
             <ImageView
                 android:id="@+id/albumCoverIv"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
+                android:layout_width="220dp"
+                android:layout_height="220dp"
                 android:src="@drawable/ic_launcher_background"
+                android:scaleType="fitXY"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <LinearLayout
-                android:id="@+id/lyricLly"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/lyricTv"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:textColor="@color/gray"
+                android:text="dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\nfffffffffffffffffff"
+                android:textSize="17sp"
+                android:maxLines="2"
+                android:gravity="center"
+                android:lineSpacingExtra="7dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/albumCoverIv">
+                app:layout_constraintTop_toBottomOf="@+id/albumCoverIv" />
 
-                <TextView
-                    android:id="@+id/lyricTv1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="gggggggggggggggggg"
-                    android:textColor="#777777"
-                    android:textSize="15sp"
-                    android:singleLine="true"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="16dp" />
+<!--            <LinearLayout-->
+<!--                android:id="@+id/lyricLly"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/albumCoverIv">-->
 
-                <TextView
-                    android:id="@+id/lyricTv2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
-                    android:textColor="#777777"
-                    android:textSize="15sp"
-                    android:singleLine="true"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lyricTv1"
-                    android:layout_marginTop="8dp"/>
+<!--                <TextView-->
+<!--                    android:id="@+id/lyricTv1"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="gggggggggggggggggg"-->
+<!--                    android:textColor="#777777"-->
+<!--                    android:textSize="15sp"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:gravity="center"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    android:layout_marginTop="16dp" />-->
 
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:id="@+id/lyricTv2"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"-->
+<!--                    android:textColor="#777777"-->
+<!--                    android:textSize="15sp"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:gravity="center"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/lyricTv1"-->
+<!--                    android:layout_marginTop="8dp"/>-->
+
+<!--            </LinearLayout>-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/singAddInfoLly"
@@ -114,7 +132,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/seekBarLly"
-                app:layout_constraintTop_toBottomOf="@+id/lyricLly">
+                app:layout_constraintTop_toBottomOf="@+id/lyricTv">
 
                 <ImageView
                     android:id="@+id/likeBtn"
@@ -173,7 +191,7 @@
                     android:id="@+id/timePgEndTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="01:00"
+                    android:text="00:00"
                     android:textColor="@color/gray"
                     android:gravity="center"
                     android:layout_marginEnd="12dp"
